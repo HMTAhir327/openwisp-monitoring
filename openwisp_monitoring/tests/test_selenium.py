@@ -634,7 +634,6 @@ class TestDashboardMap(
         self.wait_for_visibility(By.CSS_SELECTOR, "#device-map-container")
         self.wait_for_visibility(By.CSS_SELECTOR, ".leaflet-container")
         self._open_popup("_owGeoMap", location.id)
-        sleep(0.5)
         self.wait_for(
             "element_to_be_clickable", By.CSS_SELECTOR, ".map-detail .floorplan-btn"
         ).click()
@@ -760,7 +759,6 @@ class TestDashboardMap(
         location.geometry = Point(12.513124, 41.898903)
         location.full_clean()
         location.save()
-        sleep(0.3)
         series_value = WebDriverWait(self.web_driver, 5).until(
             lambda d: d.execute_script(
                 """
@@ -780,7 +778,6 @@ class TestDashboardMap(
             location.geometry = Point(12.511124, 41.898903)
             location.full_clean()
             location.save()
-            sleep(0.3)
             series_value = WebDriverWait(self.web_driver, 5).until(
                 lambda d: d.execute_script(
                     """
@@ -838,7 +835,7 @@ class TestDashboardMap(
             org2_location.geometry = Point(12.515124, 41.899603, srid=4326)
             org2_location.full_clean()
             org2_location.save()
-            sleep(0.3)
+            sleep(0.3)  # Wait for JS animation
             series_locations = WebDriverWait(self.web_driver, 5).until(
                 lambda d: d.execute_script(
                     """
@@ -873,7 +870,7 @@ class TestDashboardMap(
             org1_location.geometry = Point(12.517124, 41.898903, srid=4326)
             org1_location.full_clean()
             org1_location.save()
-            sleep(0.3)
+            sleep(0.3)  # Wait for JS animation
             try:
                 series_locations = WebDriverWait(org1_driver, 5).until(
                     lambda d: d.execute_script(
@@ -908,7 +905,7 @@ class TestDashboardMap(
             org2_location.geometry = Point(12.517124, 41.899603, srid=4326)
             org2_location.full_clean()
             org2_location.save()
-            sleep(0.3)
+            sleep(0.3)  # Wait for JS animation
             try:
                 series_locations = WebDriverWait(org2_driver, 5).until(
                     lambda d: d.execute_script(

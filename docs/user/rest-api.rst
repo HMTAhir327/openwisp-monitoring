@@ -264,7 +264,7 @@ specified location, along with device details and available floors.
 
 **Available filters**
 
-- ``floor`` (floor number of the floorplan)
+- ``floor`` (floor number of the floor plan)
 
 Here's a few examples:
 

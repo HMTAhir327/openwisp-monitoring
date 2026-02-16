@@ -12,6 +12,12 @@
   let maps = {};
   let locationId = null;
   let popstateHandler = null;
+  const escapeHtml = function (text) {
+    if (!text) return "";
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  };
   // Use case: we support overlaying two maps. The URL hash contains up to two
   // fragments separated by ';' — one is the geo map and the other is an indoor map.
   //
@@ -287,11 +293,11 @@
       <div class="njg-tooltip-inner">
         <div class="njg-tooltip-item">
           <span class="njg-tooltip-key">${gettext("name")}</span>
-          <span class="njg-tooltip-value">${node?.device_name}</span>
+          <span class="njg-tooltip-value">${escapeHtml(node?.device_name)}</span>
         </div>
         <div class="njg-tooltip-item">
           <span class="njg-tooltip-key">${gettext("mac address")}</span>
-          <span class="njg-tooltip-value">${node?.mac_address}</span>
+          <span class="njg-tooltip-value">${escapeHtml(node?.mac_address)}</span>
         </div>
         <div class="njg-tooltip-item">
           <span class="njg-tooltip-key">${gettext("status")}</span>

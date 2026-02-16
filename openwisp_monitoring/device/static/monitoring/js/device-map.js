@@ -20,6 +20,12 @@
   const getLocationDeviceUrl = function (pk) {
     return window._owGeoMapConfig.locationDeviceUrl.replace("000", pk);
   };
+  const escapeHtml = function (text) {
+    if (!text) return "";
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  };
   const getColor = function (data) {
     let deviceCount = data.device_count,
       findResult = function (func) {
@@ -113,7 +119,7 @@
 
         const popupContent = `
           <div class="map-detail">
-            <h2>${popupTitle} (${data.count})</h2>
+            <h2>${escapeHtml(popupTitle)} (${data.count})</h2>
             <div class="input-container">
               <input id="device-search" placeholder="${gettext("Search for devices")}" />
             </div>
