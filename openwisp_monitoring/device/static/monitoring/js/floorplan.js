@@ -118,24 +118,30 @@
         dataType: "json",
         xhrFields: { withCredentials: true },
         success: async (data) => {
-          const actualFloor = data.results.length ? data.results[0].floor : floor;
-          if (!allResults[actualFloor]) {
-            allResults[actualFloor] = [];
+          try {
+            const actualFloor = data.results.length ? data.results[0].floor : floor;
+            if (!allResults[actualFloor]) {
+              allResults[actualFloor] = [];
+            }
+            allResults[actualFloor] = [...allResults[actualFloor], ...data.results];
+            floors = data.floors;
+            if (!currentFloor && data.results.length) {
+              currentFloor = actualFloor;
+            }
+            if (data.next) {
+              await fetchData(data.next, actualFloor);
+            }
+            resolve();
+          } catch (e) {
+            alert(gettext("Error loading floorplan coordinates."));
+            $(".floorplan-loading-spinner").hide();
+            reject(e);
           }
-          allResults[actualFloor] = [...allResults[actualFloor], ...data.results];
-          floors = data.floors;
-          if (!currentFloor && data.results.length) {
-            currentFloor = actualFloor;
-          }
-          if (data.next) {
-            await fetchData(data.next, actualFloor);
-          }
-          resolve();
         },
-        error: () => {
+        error: (xhr, status, err) => {
           alert(gettext("Error loading floorplan coordinates."));
           $(".floorplan-loading-spinner").hide();
-          reject();
+          reject(new Error(`${status}: ${err}`));
         },
       });
     });
@@ -280,7 +286,7 @@
       renderIndoorMap(nodesThisFloor, imageUrl, $floorDiv[0].id, floor);
     }
     $floorDiv.show();
-    maps[currentFloor]?.leaflet.invalidateSize();
+    maps[currentFloor]?.leaflet?.invalidateSize();
   }
 
   let currentPopup = null;

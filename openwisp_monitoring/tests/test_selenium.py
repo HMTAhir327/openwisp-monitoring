@@ -40,7 +40,6 @@ Check = load_model("check", "Check")
 Location = load_model("geo", "Location")
 DeviceLocation = load_model("geo", "DeviceLocation")
 Floorplan = load_model("geo", "Floorplan")
-OrganizationUser = load_model("openwisp_users", "OrganizationUser")
 Group = load_model("openwisp_users", "Group")
 
 
@@ -891,7 +890,7 @@ class TestDashboardMap(
                 [org1_location.geometry.x, org1_location.geometry.y],
                 series_locations["org1_location"]["value"],
             )
-            self.assertEqual(series_locations["org2_location"], None)
+            self.assertIsNone(series_locations["org2_location"])
 
         with self.subTest("Org2 location update is broadcast to org2 user only"):
             self._create_administrator(
@@ -926,4 +925,4 @@ class TestDashboardMap(
                 [org2_location.geometry.x, org2_location.geometry.y],
                 series_locations["org2_location"]["value"],
             )
-            self.assertEqual(series_locations["org1_location"], None)
+            self.assertIsNone(series_locations["org1_location"])

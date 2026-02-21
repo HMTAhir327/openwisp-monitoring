@@ -152,9 +152,10 @@
           .setContent(popupContent)
           .openOn(map);
         const el = $(currentPopup.getElement());
-        function renderRows() {
+        function renderRows(deviceList) {
+          deviceList = deviceList || devices;
           const popup = $(".map-detail");
-          if (devices.length === 0) {
+          if (deviceList.length === 0) {
             popup.find("tbody").html(`
               <tr>
                 <td class="no-devices" colspan="2">
@@ -164,14 +165,14 @@
             `);
             return "";
           }
-          const rows = devices
+          const rows = deviceList
             .map(
               (device) => `
             <tr>
-              <td class="col-name"><a href="${device.admin_edit_url}">${device.name}</a></td>
+              <td class="col-name"><a href="${device.admin_edit_url}">${escapeHtml(device.name)}</a></td>
               <td class="col-status">
                 <span class="health-status health-${device.monitoring.status}">
-                  ${gettext(device.monitoring.status_label)}
+                  ${escapeHtml(gettext(device.monitoring.status_label))}
                 </span>
               </td>
             </tr>
@@ -183,7 +184,7 @@
         }
         let fetchDevicesTimeout;
         let loading = false;
-        function fetchDevices(url, ms = 0) {
+        function fetchDevices(url, ms = 0, append) {
           if (!url || loading) return;
           clearTimeout(fetchDevicesTimeout);
           loading = true;
@@ -206,8 +207,8 @@
             }
             const queryString = params.toString();
             let fetchUrl;
-            // if nextUrl is the same as url, that means we are fetching for infinite scroll
-            if (url === nextUrl) {
+            // if append is true, that means we are fetching for infinite scroll
+            if (append) {
               fetchUrl = url;
             } else {
               fetchUrl = queryString ? `${url}?${queryString}` : url;
@@ -217,8 +218,7 @@
               url: fetchUrl,
               xhrFields: { withCredentials: true },
               success(data) {
-                // If we are fetching for infinte scroll new need concat the results otherwise not
-                if (url === nextUrl) {
+                if (append) {
                   devices = devices.concat(data.results);
                 } else {
                   devices = data.results;
@@ -259,10 +259,10 @@
         });
         el.find(".table-container").on("scroll", function () {
           if (this.scrollTop + this.clientHeight >= this.scrollHeight - 10) {
-            fetchDevices(nextUrl, 100);
+            fetchDevices(nextUrl, 100, true);
           }
         });
-        $(".floorplan-btn").on("click", function () {
+        el.find(".floorplan-btn").on("click", function () {
           const floorplanUrl = getIndoorCoordinatesUrl(locationId);
           window.openFloorPlan(floorplanUrl, locationId);
         });
@@ -555,7 +555,7 @@
       openPopup: function (locationId) {
         const index = map?.data?.nodes?.findIndex((n) => n.id === locationId);
         const nodeData = map?.data?.nodes?.[index];
-        if (index === -1 || !nodeData) {
+        if (index == null || index === -1 || !nodeData) {
           const id = map.config.bookmarkableActions.id;
           map.utils.removeUrlFragment(id);
           console.error(`Node with ID "${locationId}" not found.`);
@@ -609,12 +609,12 @@
       const data = JSON.parse(e.data);
       const [lng, lat] = data.geometry.coordinates;
       if (currentPopup && data.id === currentPopupLocationId) {
-        $(".leaflet-popup").hide();
+        $(currentPopup.getElement()).hide();
       }
       map.utils.moveNodeInRealTime(data.id, { lng, lat });
       if (currentPopup && data.id === currentPopupLocationId) {
         currentPopup.setLatLng([lat, lng]);
-        $(".leaflet-popup").show();
+        $(currentPopup.getElement()).show();
       }
     };
   }
